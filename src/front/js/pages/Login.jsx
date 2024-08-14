@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react"
-import { Context } from "../store/appContext"
 import { Link } from "react-router-dom"
+import { Context } from "../store/appContext"
 
 const initialState = {
     email: "",
@@ -19,56 +19,68 @@ const Login = () => {
         })
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault()
-        actions.login(user)
+        try {
+            const response = await actions.login(user)
+            console.log(response)
+        } catch (error) {
+            console.log(error)
+        }
+
+
     }
 
+
     return (
-        <>
-            <div className="container mt-5">
-                <div className="row justify-content-center">
-                    <h2 className="text-center my-3">Ingresar a plataforma</h2>
-                    <div className="col-12 col-md-6 border py-4">
-                        <form onSubmit={handleSubmit}>
-                            <div className="form-group mb-3">
-                                <label>Email:</label>
-                                <input
-                                    type="text"
-                                    placeholder="elquefrao@email.com"
-                                    className="form-control"
-                                    name="email"
-                                    value={user.email}
-                                    onChange={handleChange}
-                                />
-                            </div>
+        <div className="container">
+            <div className="row justify-content-center">
+                <h2 className="text-center my-3">Ingresa en nuestra plataforma :)</h2>
+                <div className="col-12 col-md-6 border py-4">
+                    <form 
+                        onSubmit={handleSubmit}
+                    >
+                        <div className="form-group mb-3">
+                            <label htmlFor="btnEmail">Correo:</label>
+                            <input
+                                type="text"
+                                placeholder="elmero@gmail.com"
+                                className="form-control"
+                                id="btnEmail"
+                                name="email"
+                                value={user.email}
+                                onChange={handleChange}
+                            />
+                        </div>
 
-                            <div className="form-group mb-3">
-                                <label>Contraseña:</label>
-                                <input
-                                    type="password"
-                                    placeholder="123456"
-                                    className="form-control"
-                                    name="password"
-                                    value={user.password}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                            <button className=" btn btn-outline-primary w-100">Iniciar sesión</button>
-                        </form>
+                        <div className="form-group mb-3">
+                            <label htmlFor="btnPassword">Contraseña:</label>
+                            <input
+                                type="password"
+                                placeholder="elmero@gmail.com"
+                                className="form-control"
+                                id="btnPassword"
+                                name="password"
+                                value={user.password}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <button className="btn btn-outline-primary w-100">Inicia sesión</button>
+                    </form>
+                </div>
 
-                    </div>
-                    <div className="w-100"></div>
+                <div className="w-100"></div>
 
-                    <div className="col-12 col-md-6 d-flex justify-content-between my-1">
-                        <Link to={`/register`}>Registrarme</Link>
-                        <Link to={`/recuperar-contrasenia`}>Olvido su contraseña</Link>
-                    </div>
+                {/* <br/> */}
+
+                <div className="col-12 col-md-6 d-flex justify-content-between my-1">
+                    <Link to={"/register"}>Registrarme</Link>
+                    <Link to={"/recovery-password"}>Olvido su contraseña</Link>
                 </div>
             </div>
-
-        </>
+        </div>
     )
 }
+
 
 export default Login

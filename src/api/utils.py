@@ -1,9 +1,9 @@
-import os
 from flask import jsonify, url_for
+from werkzeug.security import generate_password_hash, check_password_hash
+import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import smtplib, ssl
-
 
 
 class APIException(Exception):
@@ -47,44 +47,48 @@ def generate_sitemap(app):
         <ul style="text-align: left;">"""+links_html+"</ul></div>"
 
 
+def set_password(password, salt):
+    return generate_password_hash(f"{password}{salt}")
+
+
 def send_email(subject, to, body):
-    
-    smtp_address = os.getenv("SMTP_ADDRESS") 
-    smtp_port = os.getenv("SMTP_PORT") 
-    email_address = os.getenv("EMAIL_ADDRESS") 
-    email_password = os.getenv("EMAIL_PASSWORD") 
+
+
+    smtp_address =os.getenv("SMTP_ADDRESS")
+    smtp_port = os.getenv("SMTP_PORT")
+    smtp_email= os.getenv("EMAIL_ADDRESS")
+    smtp_password=os.getenv("EMAIL_PASSWORD")
+
 
     message = MIMEMultipart("alternative")
     message["Subject"] = subject
-    message["From"] = email_address
+    message["From"] = smtp_email
     message["To"] = to
 
-    html = '''
-        <html>
-        <body>
-        ''' + body + '''   
-        </body>
-        </html>
-    '''
 
-    #crear los elemento MIME
-    html_mime = MIMEText(html, 'html')
+    html = """
+            <html>
+                <body>
+                    """ + body + """
+                </body>
+            </html>
+        """
+    
+    # crea el elemento mime text para que lo interprete como html
+    html_mime = MIMEText(html, "html")
 
-    #adjuntamos el código html al mensaje
     message.attach(html_mime)
 
     try:
-        print("me ejecuto en el endpoint en enviar mensaje")
-
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL(smtp_address, smtp_port, context=context) as server:
-            server.login(email_address, email_password)
-            server.sendmail(email_address, to, message.as_string())
-            print("me ejecuto")
+            server.login(smtp_email, smtp_password)
+            server.sendmail(smtp_address, to, message.as_string())
+            print("message sended")
+
         return True
 
-
-
     except Exception as error:
-        print(str(error))
+        print(error.args)
+
         return False
